@@ -4,9 +4,9 @@ import {
 } from 'aurelia-framework';
 import $ from 'jquery';
 import { EventAggregator } from 'aurelia-event-aggregator';
-import { KeystrokeService } from './services/keystroke-service';
-import { TouchService } from './services/touch-service';
-import { TimingService } from './services/timing-service';
+import { KeystrokeService } from 'resources/services/keystroke-service';
+import { TouchService } from 'resources/services/touch-service';
+import { TimingService } from 'resources/services/timing-service';
 
 @inject(KeystrokeService, TouchService, TimingService, EventAggregator)
 

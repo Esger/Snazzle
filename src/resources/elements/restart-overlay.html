@@ -1,7 +1,7 @@
 <template class="${showOverlay || pause ? 'show' : ''}"
           click.delegate="start()"
           touchstart.delegate="start()">
-    <require from="components/restart-overlay.css"></require>
+    <require from="./restart-overlay.css"></require>
     <h2 class="restart ${!pause && !firstGame ? 'show' : ''}">Game over</h2>
     <h2 class="restart ${!pause ? 'show' : ''}">Click or tap or &lt;enter&gt; to start new game</h2>
     <h2 class="paused ${pause ? 'show' : ''}">Game paused</h2>
