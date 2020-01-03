@@ -1,6 +1,6 @@
 import { inject } from 'aurelia-framework';
 import { EventAggregator } from 'aurelia-event-aggregator';
-import { ScreenService } from './screen-service'
+import { ScreenService } from './screen-service';
 import { SnackService } from '../services/snack-service';
 
 @inject(EventAggregator, ScreenService, SnackService)
@@ -26,7 +26,7 @@ export class SnakeService {
             ],
             segments: [],
             deadSegments: []
-        }
+        };
         this.snackMethods = {
             nope: () => {
                 void (0);
@@ -63,9 +63,9 @@ export class SnakeService {
                 this.ea.publish('snack', 'Viagra: grow harder for 15 seconds');
             },
             weed: () => {
-                this.ea.publish('snack', 'Weed: high for 15 seconds')
+                this.ea.publish('snack', 'Weed: high for 15 seconds');
             }
-        }
+        };
         this.setSubscribers();
     }
 
@@ -97,7 +97,7 @@ export class SnakeService {
     }
 
     cutSnake() {
-        let halfSnake = Math.floor(this.snake.segments.length / 2)
+        let halfSnake = Math.floor(this.snake.segments.length / 2);
         this.snake.segments.splice(-halfSnake);
     }
 
@@ -157,7 +157,7 @@ export class SnakeService {
             'ArrowDown': 1,
             'ArrowLeft': 2,
             'ArrowUp': 3
-        }
+        };
         this.ea.subscribe('keyPressed', response => {
             if (response.startsWith('Arrow') && this.snake.turnSteps == 0) {
                 this.snake.turnSteps = 1;

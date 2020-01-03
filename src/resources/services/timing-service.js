@@ -36,7 +36,7 @@ export class TimingService {
 
         this.methods = {
             axe: () => {
-                void (0)
+                void (0);
             },
             beer: () => {
                 this.growSlower();
@@ -51,7 +51,7 @@ export class TimingService {
                 this.scoreService.update(1000);
             },
             ruby: () => {
-                this.multiPlyScore()
+                this.multiPlyScore();
             },
             skull: () => {
                 this.dropSnake();
@@ -68,7 +68,7 @@ export class TimingService {
             weed: () => {
                 this.mixSnacks();
             }
-        }
+        };
 
         this.setSubscribers();
     }
@@ -84,7 +84,7 @@ export class TimingService {
 
     resumeGame() {
         this.stepTimerHandle = setInterval(() => {
-            this.drawScreen()
+            this.drawScreen();
         }, this.stepInterval);
     }
 
@@ -109,7 +109,7 @@ export class TimingService {
             this.speed += 1;
             this.clearTimedEvents();
             this.stepInterval -= this.changeStepInterval;
-            this.screenService.setAnimationTime(this.stepInterval * .001);
+            this.screenService.setAnimationTime(this.stepInterval * 0.001);
             this.resumeGame();
             this.ea.publish('speed', this.speed);
         }
@@ -120,7 +120,7 @@ export class TimingService {
             this.speed -= 1;
             this.clearTimedEvents();
             this.stepInterval += this.changeStepInterval;
-            this.screenService.setAnimationTime(this.stepInterval * .001);
+            this.screenService.setAnimationTime(this.stepInterval * 0.001);
             this.resumeGame();
             this.ea.publish('speed', this.speed);
         }
@@ -210,7 +210,7 @@ export class TimingService {
 
     resetIntervals() {
         this.stepInterval = this.maxStepInterval;
-        this.screenService.setAnimationTime(this.stepInterval * .001);
+        this.screenService.setAnimationTime(this.stepInterval * 0.001);
         this.scoreInterval = this.baseSoreInterval;
         this.growInterval = this.baseGrowInterval;
         this.speedupInterval = this.baseSpeedupInterval;

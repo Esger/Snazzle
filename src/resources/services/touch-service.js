@@ -16,7 +16,7 @@ export class TouchService {
             width: 1,
             height: 1,
             diagonal: 1
-        }
+        };
         this.ea.subscribe('touch', (response) => {
             this.handleTouch(response);
         });

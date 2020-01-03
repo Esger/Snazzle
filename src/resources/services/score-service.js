@@ -12,8 +12,8 @@ export class ScoreService {
         this.multiplier = 1;
         this.score = 0;
         this.highScore = this.readHighscore();
-        this.ea.subscribe('gameOver', response => { this.saveHighscore() });
-        this.ea.subscribe('resetHigh', response => { this.resetHighscore() });
+        this.ea.subscribe('gameOver', response => { this.saveHighscore(); });
+        this.ea.subscribe('resetHigh', response => { this.resetHighscore(); });
     }
 
     update(amount) {

@@ -1,6 +1,6 @@
 import { inject } from 'aurelia-framework';
 import { EventAggregator } from 'aurelia-event-aggregator';
-import { ScreenService } from './screen-service'
+import { ScreenService } from './screen-service';
 
 @inject(EventAggregator, ScreenService)
 
@@ -22,7 +22,7 @@ export class SnackService {
             'trash',
             'viagra',
             'weed'
-        ]
+        ];
     }
 
     newSnack(x, y, name, i) {
@@ -33,7 +33,7 @@ export class SnackService {
             },
             name: name,
             nameIndex: i
-        }
+        };
         return snack;
     }
 
@@ -61,8 +61,8 @@ export class SnackService {
     addSnack() {
         let randomIndex = Math.floor(Math.random() * this.names.length);
         let snack = this.names[randomIndex];
-        let x = this.screenService.roundToSpriteSize(Math.floor(Math.random() * (this.screenService.limits.right - this.screenService.spriteSize)))
-        let y = this.screenService.roundToSpriteSize(Math.floor(Math.random() * (this.screenService.limits.bottom - this.screenService.spriteSize)))
+        let x = this.screenService.roundToSpriteSize(Math.floor(Math.random() * (this.screenService.limits.right - this.screenService.spriteSize)));
+        let y = this.screenService.roundToSpriteSize(Math.floor(Math.random() * (this.screenService.limits.bottom - this.screenService.spriteSize)));
         this.snacks.push(this.newSnack(x, y, snack, randomIndex));
     }
 
