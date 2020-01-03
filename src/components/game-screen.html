@@ -1,0 +1,16 @@
+<template>
+    <require from="components/game-screen.css"></require>
+    <div id="arena"
+         class="arena"
+         touchstart.delegate="touchService.handleTouch($event)">
+        <img repeat.for="snack of snackService.snacks"
+             src="./images/${snack.name}.png"
+             css.bind="snackPosition($index)"
+             class="snack">
+        <img repeat.for="segment of snakeService.snake.segments"
+             xcss="left: ${segment.x}px; top: ${segment.y}px;"
+             css.bind="segmentCSS($index, segment.x, segment.y)"
+             src="./images/${ snakeImage($index) }.png"
+             class="segment">
+    </div>
+</template>

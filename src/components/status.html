@@ -1,0 +1,16 @@
+<template>
+    <require from="components/status.css"></require>
+    <div class="indicators">
+        <img repeat.for="indicator of indicators"
+             class.bind="indicator"
+             src="./images/${ indicator }.png">
+    </div>
+    <h2 class="statusLine">
+        <span>Speed:</span><span class="speed">${speed}</span>
+        <span>Length:</span><span class="length">${length}</span>
+        <span>Score:</span><span class="score">${score}</span>
+        <span click.delegate="resetHighscore()"><span>High:</span><span class="high">${highScore}</span></span>
+        <span class="snack"
+              innerhtml.bind="snack"></span>
+    </h2>
+</template>

@@ -1,0 +1,36 @@
+body {
+    position           : relative;
+    -webkit-user-select: none;
+    -moz-user-select   : none;
+    -ms-user-select    : none;
+    user-select        : none;
+    overflow           : hidden;
+    font-family        : 'Trebuchet MS', sans-serif;
+    height             : 100vh;
+    background         : #800000;
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#dc143c+0,800000+100 */
+    /* Old browsers */
+    background         : url("./images/border.png"), -moz-linear-gradient(top, #dc143c 0%, #800000 100%);
+    /* FF3.6-15 */
+    background         : url("./images/border.png"), -webkit-linear-gradient(top, #dc143c 0%,#800000 100%);
+    /* Chrome10-25,Safari5.1-6 */
+    background         : url("./images/border.png"), linear-gradient(to bottom, #dc143c 0%,#800000 100%);
+    /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=  '#dc143c', endColorstr='#800000',GradientType=0 );
+    /* IE6-9 */
+    /* background-image   : url("./images/border.png"); */
+    background-repeat  : no-repeat;
+    background-size    : 100% 100%;
+}
+
+.gameTitle {
+    position      : absolute;
+    z-index       : 2;
+    top           : 0;
+    width         : 100vw;
+    letter-spacing: 1px;
+    font-size     : 20px;
+    line-height   : 24px;
+    text-align    : center;
+    color         : whitesmoke;
+}
