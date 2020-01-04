@@ -8,8 +8,7 @@
              css.bind="snackPosition($index)"
              class="snack">
         <img repeat.for="segment of snakeService.snake.segments"
-             xcss="left: ${segment.x}px; top: ${segment.y}px;"
-             css.bind="segmentCSS($index, segment.x, segment.y)"
+             css.bind="segmentCSS($index, segment.x, segment.y, segment.animate)"
              src="./images/${ snakeImage($index) }.png"
              class="segment">
     </div>

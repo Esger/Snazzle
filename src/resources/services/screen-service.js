@@ -1,25 +1,22 @@
-import {
-    inject
-} from 'aurelia-framework';
-
 export class ScreenService {
 
-    constructor(eventAggregator) {
+    constructor() {
         this.spriteSize = 16;
         this.halfSprite = this.spriteSize / 2;
         this.snackSize = 24;
         this.halfSnackSize = this.snackSize / 2;
+        this.mazeSize = 32;
         this.canvasCenter = {};
         this.limits = {};
-        this.animationTime;
+        this._animationTime;
     }
 
     setAnimationTime(time) {
-        this.animationTime = time;
+        this._animationTime = time;
     }
 
     getAnimationTime() {
-        return this.animationTime;
+        return this._animationTime;
     }
 
     setCanvasCenter(x, y) {

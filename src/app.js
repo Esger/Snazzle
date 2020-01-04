@@ -1,8 +1,6 @@
 import {
-    inject,
-    bindable
+    inject
 } from 'aurelia-framework';
-import $ from 'jquery';
 import { EventAggregator } from 'aurelia-event-aggregator';
 import { KeystrokeService } from 'resources/services/keystroke-service';
 import { TouchService } from 'resources/services/touch-service';
@@ -17,7 +15,7 @@ export class App {
         this.touchService = touchService;
         this.timingService = timingService;
         this.ea = eventAggregator;
-        this.message = 'Snake by ashWare';
+        this.message = 'Snazzle by ashWare';
     }
 
 }

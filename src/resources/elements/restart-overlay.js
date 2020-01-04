@@ -28,8 +28,10 @@ export class RestartOverlayCustomElement {
 
     addEventListeners() {
         this.ea.subscribe('gameOver', response => {
-            this.showOverlay = true;
-            this.started = false;
+            setTimeout(() => {
+                this.showOverlay = true;
+                this.started = false;
+            }, 500);
         });
         this.ea.subscribe('start', response => {
             this.showOverlay = false;

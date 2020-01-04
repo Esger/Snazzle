@@ -27,7 +27,9 @@ export class GameScreenCustomElement {
         this.snakeParts = this.snakeService.snakeParts;
         this.snackNames = this.snackService.names;
         this.snacks = this.snackService.snacks;
-        this.animationTime = () => { return this.screenService.getAnimationTime(); };
+        this.animationTime = _ => {
+            return this.screenService.getAnimationTime();
+        };
     }
 
     roundToSpriteSize(size) {
@@ -42,13 +44,14 @@ export class GameScreenCustomElement {
         }
     }
 
-    segmentCSS(index, x, y) {
+    segmentCSS(index, x, y, animate) {
         let rotationStr = '';
+        let animationTime = animate ? this.animationTime() : 0;
         if (index == 0) {
             let rotation = this.snakeService.snake.direction * 90;
             rotationStr = 'transform: rotate(' + rotation + 'deg);'
         }
-        let css = 'left: ' + x + 'px; top: ' + y + 'px; ' + rotationStr + ' transition: all ' + this.animationTime + 's linear; -webkit-transition: all ' + this.animationTime() + 's linear;';
+        let css = 'left: ' + x + 'px; top: ' + y + 'px; ' + rotationStr + ' transition: all ' + animationTime + 's linear';
         return css;
     }
 

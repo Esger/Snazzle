@@ -78,17 +78,26 @@ export class SnakeService {
         (this.snake.turnSteps > 0) && this.snake.turnSteps--;
         let tail = this.snake.segments[this.snake.segments.length - 1];
         let newTail = {};
+        newTail.animate = tail.animate;
         newTail.x = tail.x;
         newTail.y = tail.y;
+        // segments get position of predecessor
         for (let i = this.snake.segments.length - 1; i > 0; i -= 1) {
             this.snake.segments[i].x = this.snake.segments[i - 1].x;
             this.snake.segments[i].y = this.snake.segments[i - 1].y;
+            this.snake.segments[i].animate = this.snake.segments[i - 1].animate;
         }
-        this.snake.segments[0].x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this.snake.segmentSize;
-        this.snake.segments[0].y += this.snake.directions[this.mod(this.snake.direction, 4)][0][1] * this.snake.segmentSize;
-        this.hitWall();
-        this.hitSnake();
+        // head gets new position according to it's direction
         let head = this.snake.segments[0];
+        head.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this.snake.segmentSize;
+        head.y += this.snake.directions[this.mod(this.snake.direction, 4)][0][1] * this.snake.segmentSize;
+
+        // if head goes through side, don't animate
+        head.animate = (head.x < this.screenService.limits.right && head.x >= this.screenService.limits.left);
+        head.x = this.mod(head.x, this.screenService.limits.right);
+
+        this.hitBottom();
+        // this.hitSnake();
         let neck = head;
         (this.snake.segments.length > 1) && (neck = this.snake.segments[1]);
         let method = this.snackService.hitSnack(head, neck).toLowerCase();
@@ -101,6 +110,7 @@ export class SnakeService {
         this.snake.segments.splice(-halfSnake);
     }
 
+    // change to explode()
     fallDown() {
         this.crawling = false;
         for (let i = 0; i < this.snake.segments.length; i++) {
@@ -119,20 +129,19 @@ export class SnakeService {
         }
     }
 
-    hitWall() {
+    // hitTop -> win
+    // left / right -> pass through
+    hitBottom() {
         let head = this.snake.segments[0];
-        let wallHit =
-            head.x > this.limits.right - this.snake.segmentSize ||
-            head.x < this.limits.left ||
-            head.y > this.limits.bottom - this.snake.segmentSize ||
-            head.y < this.limits.top;
-        if (wallHit) {
-            this.ea.publish('die', 'You hit a wall');
+        let bottomHit = head.y > this.limits.bottom - this.snake.segmentSize;
+        if (bottomHit) {
+            this.ea.publish('die', 'You&rsquo;re dirt');
             return true;
         }
         return false;
     }
 
+    // Dit niet?
     hitSnake() {
         let head = this.snake.segments[0];
         for (let i = 3; i < this.snake.segments.length - 1; i++) {
@@ -185,6 +194,7 @@ export class SnakeService {
         let segment = {};
         segment.x = center.x;
         segment.y = center.y;
+        segment.animate = true;
         this.snake.segments.push(segment);
     }
 }
