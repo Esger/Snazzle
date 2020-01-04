@@ -1,11 +1,15 @@
 <template>
     <div id="arena"
          class="arena"
+         css="width:${arenaWidth}px; height:${arenaHeight}px"
          touchstart.delegate="touchService.handleTouch($event)">
         <img repeat.for="snack of snackService.snacks"
              src="../../assets/images/${snack.name}.png"
-             css.bind="snackPosition($index)"
+             css="left:${snack.position.x}px; top:${snack.position.y}px"
              class="snack">
+        <div repeat.for="wall of mazeService.mazeWalls"
+             css.bind="wallPosition(wall.position)"
+             class="mazeWall"></div>
         <img repeat.for="segment of snakeService.snake.segments"
              css.bind="segmentCSS($index, segment.x, segment.y, segment.animate)"
              src="../../assets/images/${ snakeImage($index) }.png"

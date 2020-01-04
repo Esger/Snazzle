@@ -190,7 +190,7 @@ export class SnakeService {
         this.snake.segments = [];
         this.snake.turnSteps = 0;
         this.limits = this.screenService.getLimits();
-        let center = this.screenService.getCanvasCenter();
+        let center = this.screenService.getArenaCenter();
         let segment = {};
         segment.x = center.x;
         segment.y = center.y;

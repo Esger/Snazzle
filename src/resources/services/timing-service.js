@@ -2,16 +2,18 @@ import { inject } from 'aurelia-framework';
 import { EventAggregator } from 'aurelia-event-aggregator';
 import { SnakeService } from './snake-service';
 import { SnackService } from './snack-service';
+import { MazeService } from './maze-service';
 import { ScreenService } from './screen-service';
 import { ScoreService } from './score-service';
 
-@inject(EventAggregator, SnakeService, SnackService, ScreenService, ScoreService)
+@inject(EventAggregator, SnakeService, SnackService, MazeService, ScreenService, ScoreService)
 
 export class TimingService {
-    constructor(eventAggregator, snakeService, snackService, screenService, scoreService) {
+    constructor(eventAggregator, snakeService, snackService, mazeService, screenService, scoreService) {
         this.ea = eventAggregator;
         this.snakeService = snakeService;
         this.snackService = snackService;
+        this.mazeService = mazeService;
         this.screenService = screenService;
         this.scoreService = scoreService;
 
@@ -35,37 +37,37 @@ export class TimingService {
         this.snackDuration = 15000;
 
         this.methods = {
-            axe: () => {
+            axe: _ => {
                 void (0);
             },
-            beer: () => {
+            beer: _ => {
                 this.growSlower();
             },
-            bunny: () => {
+            bunny: _ => {
                 this.speedUp();
             },
-            diamond: () => {
+            diamond: _ => {
                 this.scoreService.update(10000);
             },
-            gold: () => {
+            gold: _ => {
                 this.scoreService.update(1000);
             },
-            ruby: () => {
+            ruby: _ => {
                 this.multiPlyScore();
             },
-            skull: () => {
+            skull: _ => {
                 this.dropSnake();
             },
-            snail: () => {
+            snail: _ => {
                 this.slowDown();
             },
-            trash: () => {
+            trash: _ => {
                 this.snackService.initSnacks();
             },
-            viagra: () => {
+            viagra: _ => {
                 this.growHarder();
             },
-            weed: () => {
+            weed: _ => {
                 this.mixSnacks();
             }
         };
@@ -78,12 +80,13 @@ export class TimingService {
         this.scoreService.initScore();
         this.snakeService.initSnake();
         this.snackService.initSnacks();
+        this.mazeService.initWalls();
         this.crawling = true;
         this.resumeGame();
     }
 
     resumeGame() {
-        this.stepTimerHandle = setInterval(() => {
+        this.stepTimerHandle = setInterval(_ => {
             this.drawScreen();
         }, this.stepInterval);
     }
@@ -95,11 +98,12 @@ export class TimingService {
         (this.steps % this.speedupInterval == 0) && this.speedUp();
         (this.steps % this.snackInterval == 0) && this.snackService.addSnack();
         this.snakeService.step(grow);
+        this.mazeService.lower();
         this.scoreService.update(this.snakeService.snake.segments.length);
     }
 
     dropSnake() {
-        this.fallTimerHandle = setInterval(() => {
+        this.fallTimerHandle = setInterval(_ => {
             this.snakeService.fallDown();
         }, this.dropInterval);
     }
@@ -128,7 +132,7 @@ export class TimingService {
 
     growSlower() {
         this.growInterval += 5;
-        setTimeout(() => {
+        setTimeout(_ => {
             this.growInterval -= 5;
         }, this.snackDuration);
     }
@@ -136,7 +140,7 @@ export class TimingService {
     growHarder() {
         if (this.growInterval > this.baseGrowInterval) {
             this.growInterval -= 5;
-            setTimeout(() => {
+            setTimeout(_ => {
                 this.growInterval += 5;
             }, this.snackDuration);
         }
@@ -144,14 +148,14 @@ export class TimingService {
 
     multiPlyScore() {
         this.scoreService.setMultiplier();
-        setTimeout(() => {
+        setTimeout(_ => {
             this.scoreService.resetMultiplier();
         }, this.snackDuration);
     }
 
     mixSnacks() {
         this.snackService.mixSnacks();
-        setTimeout(() => {
+        setTimeout(_ => {
             this.snackService.unMixSnacks();
         }, this.snackDuration);
     }

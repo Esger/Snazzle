@@ -1,7 +1,23 @@
 export class MazeService {
 
     constructor() {
-        mazeWalls = [];
+        this.mazeWalls = [];
     }
 
+    initWalls() {
+        this.addWall();
+    }
+
+    addWall() {
+        let wall = {
+            position: -16
+        }
+        this.mazeWalls.push(wall);
+    }
+
+    lower() {
+        this.mazeWalls.forEach(wall => {
+            wall.position++;
+        });
+    }
 }

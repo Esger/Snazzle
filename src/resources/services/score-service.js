@@ -38,13 +38,13 @@ export class ScoreService {
     }
 
     saveHighscore() {
-        AureliaCookie.set('highScore', this.highScore, {
+        AureliaCookie.set('snazzle-highScore', this.highScore, {
             expiry: -1,
         });
     }
 
     readHighscore() {
-        let hs = AureliaCookie.get('highScore');
+        let hs = AureliaCookie.get('snazzle-highScore');
         if (hs > 0) {
             return hs;
         }

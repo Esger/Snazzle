@@ -9,17 +9,19 @@ import { TouchService } from '../services/touch-service';
 import { ScreenService } from '../services/screen-service';
 import { SnakeService } from '../services/snake-service';
 import { SnackService } from '../services/snack-service';
+import { MazeService } from '../services/maze-service';
 
-@inject(EventAggregator, TouchService, ScreenService, SnakeService, SnackService)
+@inject(EventAggregator, TouchService, ScreenService, SnakeService, SnackService, MazeService)
 
 export class GameScreenCustomElement {
 
-    constructor(eventAggregator, touchService, screenService, snakeService, snackService) {
+    constructor(eventAggregator, touchService, screenService, snakeService, snackService, mazeService) {
         this.ea = eventAggregator;
         this.touchService = touchService;
         this.screenService = screenService;
         this.snakeService = snakeService;
         this.snackService = snackService;
+        this.mazeService = mazeService;
         this.snakeImages = [];
         this.snackImages = [];
         this.spriteSize = 16;
@@ -55,24 +57,22 @@ export class GameScreenCustomElement {
         return css;
     }
 
-    snackPosition(index) {
-        let snack = this.snackService.snacks[index];
-        return {
-            left: snack.position.x + 'px',
-            top: snack.position.y + 'px'
-        }
+    wallPosition(yPos) {
+        let animationTime = this.animationTime();
+        let css = 'top: ' + yPos + 'px; transition: all ' + animationTime + 's linear;';
+        return css
     }
 
     attached() {
         let self = this;
-        this.$arena = $('.arena');
         let $body = $('body');
-        let targetWidth = this.roundToSpriteSize($body.width() - 48);
-        let targetHeight = this.roundToSpriteSize($body.height() - 48);
-        this.$arena.width(targetWidth);
-        this.$arena.height(targetHeight);
-        this.touchService.setAreaSize(this.$arena);
-        this.screenService.setDomVars(this.$arena);
+        this.arenaWidth = this.roundToSpriteSize($body.width() - 96);
+        this.arenaHeight = this.roundToSpriteSize($body.height() - 96);
+        this.$arena = $('.arena');
+        setTimeout(() => {
+            this.touchService.setAreaSize(this.$arena);
+            this.screenService.setDomVars(this.$arena);
+        });
     }
 
 }

@@ -1,4 +1,4 @@
-game-Screen {
+game-screen {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -7,6 +7,7 @@ game-Screen {
     height: 100vh;
     position: relative;
     overflow: hidden;
+    background-color: lightskyblue;
 }
 
 .arena {
@@ -14,18 +15,25 @@ game-Screen {
     background-color: black;
     pointer-events: auto;
     overflow: hidden;
-}
 
-.arena img {
-    position: absolute;
-}
+    img {
+        position: absolute;
+    }
 
-.arena .segment {
-    transform-origin: 50% 50%;
-}
+    .segment {
+        transform-origin: 50% 50%;
+    }
 
-.arena .snack {
-    width: 24px;
-    height: 24px;
-    transform: translate(-4px,-4px);
+    .snack {
+        width: 24px;
+        height: 24px;
+        transform: translate(-4px,-4px);
+    }
+
+    .mazeWall {
+        position: absolute;
+        width: 100%;
+        background-image: repeating-linear-gradient(90deg, lightskyblue 0 2px, transparent 0 8px);
+        height: 16px;
+    }
 }

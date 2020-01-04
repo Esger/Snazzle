@@ -6,7 +6,7 @@ export class ScreenService {
         this.snackSize = 24;
         this.halfSnackSize = this.snackSize / 2;
         this.mazeSize = 32;
-        this.canvasCenter = {};
+        this.arenaCenter = {};
         this.limits = {};
         this._animationTime;
     }
@@ -19,15 +19,15 @@ export class ScreenService {
         return this._animationTime;
     }
 
-    setCanvasCenter(x, y) {
-        this.canvasCenter = {
+    setArenaCenter(x, y) {
+        this.arenaCenter = {
             x: x,
             y: y
         };
     }
 
-    getCanvasCenter() {
-        return this.canvasCenter;
+    getArenaCenter() {
+        return this.arenaCenter;
     }
 
     setLimits(w, h) {
@@ -48,14 +48,14 @@ export class ScreenService {
     }
 
     setDomVars($arena) {
-        this.canvas = $('#arena')[0];
-        this.canvas.width = this.canvas.clientWidth;
-        this.canvas.height = this.canvas.clientHeight;
-        this.setCanvasCenter(
+        this.arena = $arena[0];
+        this.arena.width = this.arena.clientWidth;
+        this.arena.height = this.arena.clientHeight;
+        this.setArenaCenter(
             this.roundToSpriteSize($arena.width() / 2),
             this.roundToSpriteSize($arena.height() / 2)
         );
-        this.setLimits(this.canvas.width, this.canvas.height);
+        this.setLimits(this.arena.width, this.arena.height);
     }
 
 }

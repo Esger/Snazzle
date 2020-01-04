@@ -1,4 +1,4 @@
-game-Screen {
+game-screen {
   display: -webkit-box;
   display: flex;
   -webkit-box-orient: vertical;
@@ -12,6 +12,7 @@ game-Screen {
   height: 100vh;
   position: relative;
   overflow: hidden;
+  background-color: lightskyblue;
 }
 .arena {
   position: relative;
@@ -31,6 +32,12 @@ game-Screen {
   height: 24px;
   -webkit-transform: translate(-4px, -4px);
           transform: translate(-4px, -4px);
+}
+.arena .mazeWall {
+  position: absolute;
+  width: 100%;
+  background-image: repeating-linear-gradient(90deg, lightskyblue 0 2px, transparent 0 8px);
+  height: 16px;
 }
 restart-overlay {
   position: absolute;
@@ -67,6 +74,8 @@ restart-overlay h2 {
   display: none;
 }
 .paused.show,
+.restart.show,
+.paused.show,
 .restart.show {
   display: block;
 }
@@ -79,9 +88,8 @@ status {
 }
 .statusLine {
   font-size: 18px;
-  line-height: 30px;
+  line-height: 48px;
   color: wheat;
-  /* margin-left: 24px; */
 }
 .length,
 .score,
@@ -92,7 +100,7 @@ status {
 .indicators {
   position: absolute;
   left: 24px;
-  bottom: 4px;
+  bottom: 14px;
   height: 20px;
 }
 .indicators img {
@@ -111,7 +119,6 @@ body {
   overflow: hidden;
   font-family: 'Trebuchet MS', sans-serif;
   height: 100vh;
-  min-width: 600px;
 }
 .gameTitle {
   position: absolute;
@@ -120,7 +127,7 @@ body {
   width: 100vw;
   letter-spacing: 1px;
   font-size: 20px;
-  line-height: 24px;
+  line-height: 44px;
   text-align: center;
   color: whitesmoke;
 }
