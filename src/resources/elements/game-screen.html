@@ -8,7 +8,7 @@
              css="left:${snack.position.x}px; top:${snack.position.y}px"
              class="snack">
         <div repeat.for="wall of mazeService.mazeWalls"
-             css.bind="wallPosition(wall.position)"
+             css.bind="wallCSS(wall.position,wall.animate)"
              class="mazeWall"></div>
         <img repeat.for="segment of snakeService.snake.segments"
              css.bind="segmentCSS($index, segment.x, segment.y, segment.animate)"

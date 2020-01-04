@@ -1,15 +1,17 @@
 import { inject } from 'aurelia-framework';
 import { EventAggregator } from 'aurelia-event-aggregator';
 import { ScreenService } from './screen-service';
-import { SnackService } from '../services/snack-service';
+import { SnackService } from './snack-service';
+import { MazeService } from './maze-service';
 
-@inject(EventAggregator, ScreenService, SnackService)
+@inject(EventAggregator, ScreenService, SnackService, MazeService)
 
 export class SnakeService {
-    constructor(eventAggregator, screenService, snackService) {
+    constructor(eventAggregator, screenService, snackService, mazeService) {
         this.ea = eventAggregator;
         this.screenService = screenService;
         this.snackService = snackService;
+        this._mazeService = mazeService;
         this.snakeParts = [
             'head',
             'body',
@@ -17,6 +19,13 @@ export class SnakeService {
         ];
         this.snake = {
             direction: 0,
+            // [   [dont care], [directionChanges for each direction]
+            //     [[1, 0], [0, 1, 0, -1]],  right
+            //     [[0, 1], [-1, 0, 1, 0]],  down
+            //     [[-1, 0], [0, -1, 0, 1]], left
+            //     [[0, -1], [1, 0, -1, 0]], up
+            //     [[0, 0], [0, 0, 0, 0]]    stand
+            // ]
             directions: [
                 [[1, 0], [0, 1, 0, -1]],
                 [[0, 1], [-1, 0, 1, 0]],
@@ -74,19 +83,26 @@ export class SnakeService {
     }
 
     step(grow) {
+
         // limit the rate at which turns are accepted
         (this.snake.turnSteps > 0) && this.snake.turnSteps--;
-        let tail = this.snake.segments[this.snake.segments.length - 1];
+
+        // construct new tail before new positions are calculated
         let newTail = {};
-        newTail.animate = tail.animate;
-        newTail.x = tail.x;
-        newTail.y = tail.y;
+        if (grow) {
+            let tail = this.snake.segments[this.snake.segments.length - 1];
+            newTail.animate = tail.animate;
+            newTail.x = tail.x;
+            newTail.y = tail.y;
+        }
+
         // segments get position of predecessor
         for (let i = this.snake.segments.length - 1; i > 0; i -= 1) {
             this.snake.segments[i].x = this.snake.segments[i - 1].x;
             this.snake.segments[i].y = this.snake.segments[i - 1].y;
             this.snake.segments[i].animate = this.snake.segments[i - 1].animate;
         }
+
         // head gets new position according to it's direction
         let head = this.snake.segments[0];
         head.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this.snake.segmentSize;
@@ -96,13 +112,30 @@ export class SnakeService {
         head.animate = (head.x < this.screenService.limits.right && head.x >= this.screenService.limits.left);
         head.x = this.mod(head.x, this.screenService.limits.right);
 
+        // check if head bumps in mazeWall -> turn randomly, push down
+        // this.hitMaze();
+
         this.hitBottom();
         // this.hitSnake();
+
+        // check collision with head and neck for when snack was added late
         let neck = head;
         (this.snake.segments.length > 1) && (neck = this.snake.segments[1]);
         let method = this.snackService.hitSnack(head, neck).toLowerCase();
         this.snackMethods[method]();
+
+        // add tail element
         (grow) && (this.snake.segments.push(newTail));
+    }
+
+    hitMaze() {
+        let head = this.snake.segments[0];
+        this._mazeService.mazeWalls.forEach(wall => {
+            if (head.y > wall.position &&
+                head.y <= wall.position + this._mazeService.wallSize) {
+                let turn = Math.ceil(Math.random() * 2) - 1;
+            }
+        });
     }
 
     cutSnake() {
@@ -159,8 +192,6 @@ export class SnakeService {
     }
 
     setSubscribers() {
-        let direction = 0;
-        let newDirection = 0;
         let directions = {
             'ArrowRight': 0,
             'ArrowDown': 1,
@@ -170,14 +201,17 @@ export class SnakeService {
         this.ea.subscribe('keyPressed', response => {
             if (response.startsWith('Arrow') && this.snake.turnSteps == 0) {
                 this.snake.turnSteps = 1;
-                let directionChange = this.snake.directions[this.mod(this.snake.direction, 4)][1][directions[response]];
-                this.snake.direction += directionChange;
+                this.turnTo(directions[response]);
             }
         });
     }
 
-    minTurnSteps() {
-        return Math.ceil(this.snake.segmentSize / this.snake.stepSize) + 1;
+    turnTo(newDirection) {
+        // Ensure head rotation doesn't spin wrong direction
+        // when changing direction from 0 to 3 and vice versa
+        // And ensure it cannot turn 180 degrees
+        let directionChange = this.snake.directions[this.mod(this.snake.direction, 4)][1][newDirection];
+        this.snake.direction += directionChange;
     }
 
     initSnake() {

@@ -57,8 +57,8 @@ export class GameScreenCustomElement {
         return css;
     }
 
-    wallPosition(yPos) {
-        let animationTime = this.animationTime();
+    wallCSS(yPos, animate) {
+        let animationTime = animate ? this.animationTime() : 0;
         let css = 'top: ' + yPos + 'px; transition: all ' + animationTime + 's linear;';
         return css
     }
