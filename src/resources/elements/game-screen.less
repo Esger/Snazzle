@@ -1,0 +1,31 @@
+game-Screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.arena {
+    position: relative;
+    background-color: black;
+    pointer-events: auto;
+    overflow: hidden;
+}
+
+.arena img {
+    position: absolute;
+}
+
+.arena .segment {
+    transform-origin: 50% 50%;
+}
+
+.arena .snack {
+    width: 24px;
+    height: 24px;
+    transform: translate(-4px,-4px);
+}

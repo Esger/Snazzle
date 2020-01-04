@@ -25,10 +25,18 @@
         "source": "src/**/*.html"
     },
     "cssProcessor": {
-        "id": "none",
-        "displayName": "None",
-        "fileExtension": ".css",
-        "source": "src/**/*.css"
+        "id": "less_css",
+        "displayName": "Less and CSS",
+        "fileExtension": [
+            ".less",
+            ".css"
+        ],
+        "source": [
+            "src/resources/**/*.less",
+            "src/rewources/**/*.css",
+            "src/**/*.less",
+            "src/**/*.css"
+        ]
     },
     "editor": {
         "id": "vscode",
