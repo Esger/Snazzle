@@ -9,7 +9,7 @@ import { MazeService } from './maze-service';
 export class SnakeService {
     constructor(eventAggregator, screenService, snackService, mazeService) {
         this.ea = eventAggregator;
-        this.screenService = screenService;
+        this._screenService = screenService;
         this.snackService = snackService;
         this._mazeService = mazeService;
         this.snakeParts = [
@@ -109,8 +109,13 @@ export class SnakeService {
         head.y += this.snake.directions[this.mod(this.snake.direction, 4)][0][1] * this.snake.segmentSize;
 
         // if head goes through side, don't animate
-        head.animate = (head.x < this.screenService.limits.right && head.x >= this.screenService.limits.left);
-        head.x = this.mod(head.x, this.screenService.limits.right);
+        let passRight = head.x > this._screenService.limits.right + this._screenService.spriteSize;
+        let passLeft = head.x < - this._screenService.spriteSize;
+        head.animate = !(passLeft || passRight);
+
+        // set head to opposite side if passed through
+        passRight && (head.x = -this._screenService.spriteSize);
+        passLeft && (head.x = this._screenService.limits.right + this._screenService.spriteSize);
 
         // check if head bumps in mazeWall -> turn randomly, push down
         // this.hitMaze();
@@ -150,7 +155,7 @@ export class SnakeService {
             if (this.snake.deadSegments.indexOf(i) < 0) {
                 let segment = this.snake.segments[i];
                 let newY = (segment.y + 1) * 1.05;
-                if (newY <= this.screenService.limits.bottom) {
+                if (newY <= this._screenService.limits.bottom) {
                     segment.y = newY;
                 } else {
                     this.snake.deadSegments.push(i);
@@ -215,7 +220,7 @@ export class SnakeService {
     }
 
     initSnake() {
-        this.snake.segmentSize = this.screenService.spriteSize;
+        this.snake.segmentSize = this._screenService.spriteSize;
         this.halfSprite = Math.round(this.snake.segmentSize / 2);
         this.accelleration = 1.01;
         this.score = 0;
@@ -223,8 +228,8 @@ export class SnakeService {
         this.snake.stepSize = 16;
         this.snake.segments = [];
         this.snake.turnSteps = 0;
-        this.limits = this.screenService.getLimits();
-        let center = this.screenService.getArenaCenter();
+        this.limits = this._screenService.getLimits();
+        let center = this._screenService.getArenaCenter();
         let segment = {};
         segment.x = center.x;
         segment.y = center.y;

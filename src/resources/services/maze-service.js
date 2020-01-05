@@ -7,10 +7,10 @@ export class MazeService {
     constructor(screenService) {
         this._screenService = screenService;
         this.wallSize = this._screenService.spriteSize;
-        this.mazeWalls = [];
     }
 
     initWalls() {
+        this.mazeWalls = [];
         this.addWall();
     }
 

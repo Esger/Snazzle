@@ -14,7 +14,7 @@ export class TimingService {
         this.snakeService = snakeService;
         this.snackService = snackService;
         this.mazeService = mazeService;
-        this.screenService = screenService;
+        this._screenService = screenService;
         this.scoreService = scoreService;
 
         this.crawling = false;
@@ -113,7 +113,7 @@ export class TimingService {
             this.speed += 1;
             this.clearTimedEvents();
             this.stepInterval -= this.changeStepInterval;
-            this.screenService.setAnimationTime(this.stepInterval * 0.001);
+            this._screenService.setAnimationTime(this.stepInterval * 0.001);
             this.resumeGame();
             this.ea.publish('speed', this.speed);
         }
@@ -124,7 +124,7 @@ export class TimingService {
             this.speed -= 1;
             this.clearTimedEvents();
             this.stepInterval += this.changeStepInterval;
-            this.screenService.setAnimationTime(this.stepInterval * 0.001);
+            this._screenService.setAnimationTime(this.stepInterval * 0.001);
             this.resumeGame();
             this.ea.publish('speed', this.speed);
         }
@@ -214,7 +214,7 @@ export class TimingService {
 
     resetIntervals() {
         this.stepInterval = this.maxStepInterval;
-        this.screenService.setAnimationTime(this.stepInterval * 0.001);
+        this._screenService.setAnimationTime(this.stepInterval * 0.001);
         this.scoreInterval = this.baseSoreInterval;
         this.growInterval = this.baseGrowInterval;
         this.speedupInterval = this.baseSpeedupInterval;

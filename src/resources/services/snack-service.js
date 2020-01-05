@@ -7,7 +7,7 @@ import { ScreenService } from './screen-service';
 export class SnackService {
     constructor(eventAggregator, screenService) {
         this.ea = eventAggregator;
-        this.screenService = screenService;
+        this._screenService = screenService;
         this.snacks = [];
         this.mixUp = false;
         this.names = [
@@ -61,8 +61,8 @@ export class SnackService {
     addSnack() {
         let randomIndex = Math.floor(Math.random() * this.names.length);
         let snack = this.names[randomIndex];
-        let x = this.screenService.roundToSpriteSize(Math.floor(Math.random() * (this.screenService.limits.right - this.screenService.spriteSize)));
-        let y = this.screenService.roundToSpriteSize(Math.floor(Math.random() * (this.screenService.limits.bottom - this.screenService.spriteSize)));
+        let x = this._screenService.roundToSpriteSize(Math.floor(Math.random() * (this._screenService.limits.right - this._screenService.spriteSize)));
+        let y = this._screenService.roundToSpriteSize(Math.floor(Math.random() * (this._screenService.limits.bottom - this._screenService.spriteSize)));
         this.snacks.push(this.newSnack(x, y, snack, randomIndex));
     }
 

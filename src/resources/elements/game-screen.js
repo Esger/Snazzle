@@ -18,7 +18,7 @@ export class GameScreenCustomElement {
     constructor(eventAggregator, touchService, screenService, snakeService, snackService, mazeService) {
         this.ea = eventAggregator;
         this.touchService = touchService;
-        this.screenService = screenService;
+        this._screenService = screenService;
         this.snakeService = snakeService;
         this.snackService = snackService;
         this.mazeService = mazeService;
@@ -30,7 +30,7 @@ export class GameScreenCustomElement {
         this.snackNames = this.snackService.names;
         this.snacks = this.snackService.snacks;
         this.animationTime = _ => {
-            return this.screenService.getAnimationTime();
+            return this._screenService.getAnimationTime();
         };
     }
 
@@ -71,7 +71,7 @@ export class GameScreenCustomElement {
         this.$arena = $('.arena');
         setTimeout(() => {
             this.touchService.setAreaSize(this.$arena);
-            this.screenService.setDomVars(this.$arena);
+            this._screenService.setDomVars(this.$arena);
         });
     }
 
