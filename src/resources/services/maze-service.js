@@ -12,8 +12,9 @@ export class MazeService {
     initWalls() {
         this._holes = 1;
         this._holeSize = 100;
-        this.mazeWalls = [];
         this.wallSize = this._screenService.spriteSize;
+        this.stepSize = this.wallSize / 2;
+        this.mazeWalls = [];
         this._wallWidth = this._screenService.arena.width;
         this.addWall();
     }
@@ -50,7 +51,7 @@ export class MazeService {
 
     lower() {
         this.mazeWalls.forEach(wall => {
-            wall.position += this.wallSize;
+            wall.position += this.stepSize;
             if (wall.position >
                 this._screenService.arena.height + this.wallSize) {
                 wall.animate = false;

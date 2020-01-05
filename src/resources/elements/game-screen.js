@@ -25,7 +25,7 @@ export class GameScreenCustomElement {
         this.snakeImages = [];
         this.snackImages = [];
         this.spriteSize = 16;
-        // images with these names.jpg should exist in /images/..
+        // images with these names.jpg must exist in /images/..
         this.snakeParts = this.snakeService.snakeParts;
         this.snackNames = this.snackService.names;
         this.snacks = this.snackService.snacks;
