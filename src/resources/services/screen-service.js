@@ -2,7 +2,6 @@ export class ScreenService {
 
     constructor() {
         this.spriteSize = 16;
-        this.halfSprite = this.spriteSize / 2;
         this.snackSize = 24;
         this.halfSnackSize = this.snackSize / 2;
         this.mazeSize = 32;

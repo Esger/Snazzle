@@ -37,15 +37,21 @@ export class SnackService {
         return snack;
     }
 
-    samePosition(pos1, pos2) {
-        return pos1.x == pos2.x && pos1.y == pos2.y;
+    collide(snackPos, headPos) {
+        let overlap = 8;
+        let xCollision = headPos.x - overlap + this._screenService.spriteSize > snackPos.x && headPos.x + overlap < snackPos.x + this._screenService.snackSize;
+        let yCollision = false;
+        if (xCollision) {
+            yCollision = headPos.y - overlap + this._screenService.spriteSize > snackPos.y && headPos.y + overlap < snackPos.y + this._screenService.snackSize;
+        }
+        return xCollision && yCollision;
     }
 
     hitSnack(head, neck) {
         for (let i = 0; i < this.snacks.length - 1; i++) {
             let snack = this.snacks[i];
-            if (this.samePosition(snack.position, head) ||
-                this.samePosition(snack.position, neck)) {
+            if (this.collide(snack.position, head) ||
+                this.collide(snack.position, neck)) {
                 this.removeSnack(i);
                 if (this.mixUp) {
                     let randomSnack = Math.floor(Math.random() * this.names.length);
@@ -62,8 +68,8 @@ export class SnackService {
         if (this.snacks.length < this.maxSnackCount) {
             let randomIndex = Math.floor(Math.random() * this.names.length);
             let snack = this.names[randomIndex];
-            let x = this._screenService.roundToSpriteSize(Math.floor(Math.random() * (this._screenService.limits.right - this._screenService.spriteSize)));
-            let y = this._screenService.roundToSpriteSize(Math.floor(Math.random() * (this._screenService.limits.bottom - this._screenService.spriteSize)));
+            let x = Math.floor(Math.random() * (this._screenService.limits.right - this._screenService.spriteSize));
+            let y = Math.floor(Math.random() * (this._screenService.limits.bottom - this._screenService.spriteSize));
             this.snacks.push(this.newSnack(x, y, snack, randomIndex));
         }
     }
@@ -77,7 +83,9 @@ export class SnackService {
     }
 
     removeSnack(index) {
-        this.snacks.splice(index, 1);
+        setTimeout(() => {
+            this.snacks.splice(index, 1);
+        }, 200);
     }
 
     initSnacks() {
