@@ -9,7 +9,11 @@
              class="snack">
         <div repeat.for="wall of mazeService.mazeWalls"
              css.bind="wallCSS(wall.position,wall.animate)"
-             class="mazeWall"></div>
+             class="mazeWall">
+            <div repeat.for="brick of wall.bricks"
+                 class="brick"
+                 css="flex:0 0 ${brick.width}px"></div>
+        </div>
         <img repeat.for="segment of snakeService.snake.segments"
              css.bind="segmentCSS($index, segment.x, segment.y, segment.animate)"
              src="../../assets/images/${ snakeImage($index) }.png"

@@ -33,7 +33,12 @@ game-screen {
     .mazeWall {
         position: absolute;
         width: 100%;
-        background-image: repeating-linear-gradient(90deg, lightskyblue 0 2px, transparent 0 8px);
         height: 16px;
+        display: flex;
+        justify-content: space-between;
+
+        .brick {
+            background-image: repeating-linear-gradient(90deg, lightskyblue 0 2px, transparent 0 8px);
+        }
     }
 }
