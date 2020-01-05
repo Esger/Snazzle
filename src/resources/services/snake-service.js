@@ -34,8 +34,7 @@ export class SnakeService {
                 [[0, 0], [0, 0, 0, 0]]
             ],
             segments: [],
-            deadSegments: [],
-            pushDown: false
+            deadSegments: []
         };
         this.snackMethods = {
             nope: () => {
@@ -98,33 +97,37 @@ export class SnakeService {
         }
 
         // segments get position of predecessor
-        let head = this.snake.segments[0];
         for (let i = this.snake.segments.length - 1; i > 0; i -= 1) {
             let current = this.snake.segments[i];
             let predecessor = this.snake.segments[i - 1];
+            this.hitMaze(current);
+            !current.pushDown && (current.y = predecessor.y);
             current.x = predecessor.x;
-
-            current.y = this.snake.pushDown ?
-                Math.max(predecessor.y, head.y + this._mazeService.wallSize) :
-                predecessor.y;
             current.animate = predecessor.animate;
         }
 
         // head gets new position according to it's direction
-        head.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this.snake.segmentSize;
-        head.y += this.snake.directions[this.mod(this.snake.direction, 4)][0][1] * this.snake.segmentSize;
+        let head = this.snake.segments[0];
+        head.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this._segmentSize;
+
+        // check if head bumps in mazeWall -> turn randomly, push down
+        this.hitMaze(head);
+        if (head.pushDown) {
+            let directions = [0, 2];
+            let newDirection = directions[Math.ceil(Math.random() * 2) - 1];
+            this.turnTo(newDirection);
+        } else {
+            head.y += this.snake.directions[this.mod(this.snake.direction, 4)][0][1] * this._segmentSize;
+        }
 
         // if head goes through side, don't animate
-        let passRight = head.x > this._screenService.limits.right + this._screenService.spriteSize;
-        let passLeft = head.x < - this._screenService.spriteSize;
+        let passRight = head.x > this._screenService.limits.right + this._segmentSize;
+        let passLeft = head.x < - this._segmentSize;
         head.animate = !(passLeft || passRight);
 
         // set head to opposite side if passed through
-        passRight && (head.x = -this._screenService.spriteSize);
-        passLeft && (head.x = this._screenService.limits.right + this._screenService.spriteSize);
-
-        // check if head bumps in mazeWall -> turn randomly, push down
-        this.hitMaze();
+        passRight && (head.x = -this._segmentSize);
+        passLeft && (head.x = this._screenService.limits.right + this._segmentSize);
 
         this.hitBottom();
         // this.hitSnake();
@@ -139,17 +142,22 @@ export class SnakeService {
         grow && (this.snake.segments.push(newTail));
     }
 
-    hitMaze() {
-        let head = this.snake.segments[0];
+    hitMaze(segment) {
+        let wallSize = this._mazeService.wallSize;
         this._mazeService.mazeWalls.forEach(wall => {
-            this.snake.pushDown = (head.y >= wall.position &&
-                head.y <= wall.position + this._mazeService.wallSize);
-            if (this.snake.pushDown) {
-                let directions = [0, 2];
-                let newDirection = directions[Math.ceil(Math.random() * 2) - 1];
-                this.turnTo(newDirection);
-                head.y = wall.position + 2 * this._mazeService.wallSize;
+            let hitWall = (segment.y >= wall.position &&
+                segment.y <= wall.position + wallSize);
+            let hitBrick = false;
+            if (hitWall) {
+                wall.bricks.forEach(brick => {
+                    hitBrick = hitBrick ||
+                        (segment.x + this._segmentSize >= brick.x && segment.x <= brick.x + brick.width);
+                });
+                if (hitBrick) {
+                    segment.y = wall.position + wallSize + 8;
+                }
             }
+            segment.pushDown = hitWall && hitBrick;
         });
     }
 
@@ -181,7 +189,7 @@ export class SnakeService {
     // left / right -> pass through
     hitBottom() {
         let head = this.snake.segments[0];
-        let bottomHit = head.y > this.limits.bottom - this.snake.segmentSize;
+        let bottomHit = head.y > this.limits.bottom - this._segmentSize;
         if (bottomHit) {
             this.ea.publish('die', 'You&rsquo;re dirt');
             return true;
@@ -230,20 +238,19 @@ export class SnakeService {
     }
 
     initSnake() {
-        this.snake.segmentSize = this._screenService.spriteSize;
-        this.halfSprite = Math.round(this.snake.segmentSize / 2);
-        this.accelleration = 1.01;
+        this._segmentSize = this._screenService.spriteSize;
         this.score = 0;
         this.snake.deadSegments = [];
-        this.snake.stepSize = 16;
         this.snake.segments = [];
         this.snake.turnSteps = 0;
         this.limits = this._screenService.getLimits();
         let center = this._screenService.getArenaCenter();
-        let segment = {};
-        segment.x = center.x;
-        segment.y = center.y;
-        segment.animate = true;
-        this.snake.segments.push(segment);
+        let head = {
+            x: center.x,
+            y: center.y,
+            animate: true,
+            pushDown: false
+        };
+        this.snake.segments.push(head);
     }
 }
