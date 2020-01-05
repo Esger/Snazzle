@@ -118,7 +118,7 @@ export class SnakeService {
         passLeft && (head.x = this._screenService.limits.right + this._screenService.spriteSize);
 
         // check if head bumps in mazeWall -> turn randomly, push down
-        // this.hitMaze();
+        this.hitMaze();
 
         this.hitBottom();
         // this.hitSnake();
@@ -136,9 +136,11 @@ export class SnakeService {
     hitMaze() {
         let head = this.snake.segments[0];
         this._mazeService.mazeWalls.forEach(wall => {
-            if (head.y > wall.position &&
+            if (head.y >= wall.position &&
                 head.y <= wall.position + this._mazeService.wallSize) {
-                let turn = Math.ceil(Math.random() * 2) - 1;
+                let directions = [0, 2];
+                let newDirection = directions[Math.ceil(Math.random() * 2) - 1];
+                this.turnTo(newDirection);
             }
         });
     }
