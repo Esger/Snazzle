@@ -59,11 +59,13 @@ export class SnackService {
     }
 
     addSnack() {
-        let randomIndex = Math.floor(Math.random() * this.names.length);
-        let snack = this.names[randomIndex];
-        let x = this._screenService.roundToSpriteSize(Math.floor(Math.random() * (this._screenService.limits.right - this._screenService.spriteSize)));
-        let y = this._screenService.roundToSpriteSize(Math.floor(Math.random() * (this._screenService.limits.bottom - this._screenService.spriteSize)));
-        this.snacks.push(this.newSnack(x, y, snack, randomIndex));
+        if (this.snacks.length < this.maxSnackCount) {
+            let randomIndex = Math.floor(Math.random() * this.names.length);
+            let snack = this.names[randomIndex];
+            let x = this._screenService.roundToSpriteSize(Math.floor(Math.random() * (this._screenService.limits.right - this._screenService.spriteSize)));
+            let y = this._screenService.roundToSpriteSize(Math.floor(Math.random() * (this._screenService.limits.bottom - this._screenService.spriteSize)));
+            this.snacks.push(this.newSnack(x, y, snack, randomIndex));
+        }
     }
 
     mixSnacks() {
@@ -80,6 +82,7 @@ export class SnackService {
 
     initSnacks() {
         this.snacks = [];
+        this.maxSnackCount = this._screenService.arena.width * this._screenService.arena.height / 15000;
     }
 
 }
