@@ -19,7 +19,7 @@ export class SnakeService {
         ];
         this.snake = {
             direction: 0,
-            // [   [dont care], [directionChanges for each direction]
+            // [   [x,y increment], [directionChanges for each direction]
             //     [[1, 0], [0, 1, 0, -1]],  right
             //     [[0, 1], [-1, 0, 1, 0]],  down
             //     [[-1, 0], [0, -1, 0, 1]], left
@@ -34,7 +34,8 @@ export class SnakeService {
                 [[0, 0], [0, 0, 0, 0]]
             ],
             segments: [],
-            deadSegments: []
+            deadSegments: [],
+            pushDown: false
         };
         this.snackMethods = {
             nope: () => {
@@ -97,14 +98,19 @@ export class SnakeService {
         }
 
         // segments get position of predecessor
+        let head = this.snake.segments[0];
         for (let i = this.snake.segments.length - 1; i > 0; i -= 1) {
-            this.snake.segments[i].x = this.snake.segments[i - 1].x;
-            this.snake.segments[i].y = this.snake.segments[i - 1].y;
-            this.snake.segments[i].animate = this.snake.segments[i - 1].animate;
+            let current = this.snake.segments[i];
+            let predecessor = this.snake.segments[i - 1];
+            current.x = predecessor.x;
+
+            current.y = this.snake.pushDown ?
+                Math.max(predecessor.y, head.y + this._mazeService.wallSize) :
+                predecessor.y;
+            current.animate = predecessor.animate;
         }
 
         // head gets new position according to it's direction
-        let head = this.snake.segments[0];
         head.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this.snake.segmentSize;
         head.y += this.snake.directions[this.mod(this.snake.direction, 4)][0][1] * this.snake.segmentSize;
 
@@ -130,17 +136,19 @@ export class SnakeService {
         this.snackMethods[method]();
 
         // add tail element
-        (grow) && (this.snake.segments.push(newTail));
+        grow && (this.snake.segments.push(newTail));
     }
 
     hitMaze() {
         let head = this.snake.segments[0];
         this._mazeService.mazeWalls.forEach(wall => {
-            if (head.y >= wall.position &&
-                head.y <= wall.position + this._mazeService.wallSize) {
+            this.snake.pushDown = (head.y >= wall.position &&
+                head.y <= wall.position + this._mazeService.wallSize);
+            if (this.snake.pushDown) {
                 let directions = [0, 2];
                 let newDirection = directions[Math.ceil(Math.random() * 2) - 1];
                 this.turnTo(newDirection);
+                head.y = wall.position + 2 * this._mazeService.wallSize;
             }
         });
     }
