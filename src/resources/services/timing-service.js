@@ -97,8 +97,8 @@ export class TimingService {
         grow && this.ea.publish('grow', this.snakeService.snake.segments.length);
         (this.steps % this.speedupInterval == 0) && this.speedUp();
         (this.steps % this.snackInterval == 0) && this.snackService.addSnack();
-        this.snakeService.step(grow);
         this.mazeService.lower();
+        this.snakeService.step(grow);
         this.scoreService.update(this.snakeService.snake.segments.length);
     }
 

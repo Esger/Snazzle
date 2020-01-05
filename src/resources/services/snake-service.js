@@ -121,13 +121,13 @@ export class SnakeService {
         }
 
         // if head goes through side, don't animate
-        let passRight = head.x > this._screenService.limits.right + this._segmentSize;
+        let passRight = head.x > this._screenService.limits.right;
         let passLeft = head.x < - this._segmentSize;
         head.animate = !(passLeft || passRight);
 
         // set head to opposite side if passed through
         passRight && (head.x = -this._segmentSize);
-        passLeft && (head.x = this._screenService.limits.right + this._segmentSize);
+        passLeft && (head.x = this._screenService.limits.right);
 
         this.hitBottom();
         // this.hitSnake();
@@ -154,7 +154,7 @@ export class SnakeService {
                         (segment.x + this._segmentSize >= brick.x && segment.x <= brick.x + brick.width);
                 });
                 if (hitBrick) {
-                    segment.y = wall.position + wallSize + 8;
+                    segment.y = wall.position + wallSize;
                 }
             }
             segment.pushDown = hitWall && hitBrick;
