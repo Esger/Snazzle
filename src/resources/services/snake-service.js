@@ -100,25 +100,12 @@ export class SnakeService {
         for (let i = this.snake.segments.length - 1; i > 0; i -= 1) {
             let current = this.snake.segments[i];
             let predecessor = this.snake.segments[i - 1];
-            this.hitMaze(current);
-            !current.pushDown && (current.y = predecessor.y);
-            current.x = predecessor.x;
-            current.animate = predecessor.animate;
+            this.advance(current, predecessor);
         }
 
         // head gets new position according to it's direction
         let head = this.snake.segments[0];
-        head.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this._segmentSize;
-
-        // check if head bumps in mazeWall -> turn randomly, push down
-        this.hitMaze(head);
-        if (head.pushDown) {
-            let directions = [0, 2];
-            let newDirection = directions[Math.ceil(Math.random() * 2) - 1];
-            this.turnTo(newDirection);
-        } else {
-            head.y += this.snake.directions[this.mod(this.snake.direction, 4)][0][1] * this._segmentSize;
-        }
+        this.advance(head);
 
         // if head goes through side, don't animate
         let passRight = head.x > this._screenService.limits.right;
@@ -142,23 +129,42 @@ export class SnakeService {
         grow && (this.snake.segments.push(newTail));
     }
 
-    hitMaze(segment) {
+    advance(segment, predecessor = undefined) {
         let wallSize = this._mazeService.wallSize;
+        let hitBrick = false;
         this._mazeService.mazeWalls.forEach(wall => {
             let hitWall = (segment.y >= wall.position &&
-                segment.y <= wall.position + wallSize);
-            let hitBrick = false;
+                segment.y < wall.position + wallSize);
             if (hitWall) {
-                wall.bricks.forEach(brick => {
-                    hitBrick = hitBrick ||
-                        (segment.x + this._segmentSize >= brick.x && segment.x <= brick.x + brick.width);
+                hitBrick = wall.bricks.some(brick => {
+                    return segment.x + this._segmentSize >= brick.x && segment.x <= brick.x + brick.width;
                 });
                 if (hitBrick) {
+                    if (this.mod(this.snake.direction, 2) == 1) {
+                        let directions = [0, 2];
+                        let newDirection = directions[Math.ceil(Math.random() * 2) - 1];
+                        this.turnTo(newDirection);
+                    }
+                    if (predecessor) {
+                        segment.x = predecessor.x;
+                        segment.animate = predecessor.animate;
+                    } else {
+                        segment.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this._segmentSize;
+                    }
                     segment.y = wall.position + wallSize;
                 }
             }
-            segment.pushDown = hitWall && hitBrick;
         });
+        if (!hitBrick) {
+            if (predecessor) {
+                segment.x = predecessor.x;
+                segment.y = predecessor.y;
+                segment.animate = predecessor.animate;
+            } else {
+                segment.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this._segmentSize;
+                segment.y += this.snake.directions[this.mod(this.snake.direction, 4)][0][1] * this._segmentSize;
+            }
+        }
     }
 
     cutSnake() {
@@ -235,6 +241,7 @@ export class SnakeService {
         // And ensure it cannot turn 180 degrees
         let directionChange = this.snake.directions[this.mod(this.snake.direction, 4)][1][newDirection];
         this.snake.direction += directionChange;
+        console.log(newDirection, this.snake.direction);
     }
 
     initSnake() {
@@ -245,9 +252,10 @@ export class SnakeService {
         this.snake.turnSteps = 0;
         this.limits = this._screenService.getLimits();
         let center = this._screenService.getArenaCenter();
+        let y = this._screenService.roundToSpriteSize(Math.floor(this.limits.bottom * 0.8));
         let head = {
             x: center.x,
-            y: center.y,
+            y: y,
             animate: true,
             pushDown: false
         };

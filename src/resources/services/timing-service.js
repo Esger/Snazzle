@@ -18,7 +18,7 @@ export class TimingService {
         this.scoreService = scoreService;
 
         this.crawling = false;
-        this.steps = 0;
+        this._steps = 0;
         this.speed = 1;
         this.fallTimerHandle = null;
         this.stepTimerHandle = null;
@@ -92,12 +92,16 @@ export class TimingService {
     }
 
     drawScreen() {
-        this.steps += 1;
-        let grow = (this.steps % this.growInterval == 0);
+        this._steps += 1;
+        let grow = (this._steps % this.growInterval == 0);
         grow && this.ea.publish('grow', this.snakeService.snake.segments.length);
-        (this.steps % this.speedupInterval == 0) && this.speedUp();
-        (this.steps % this.snackInterval == 0) && this.snackService.addSnack();
-        this.mazeService.lower();
+        (this._steps % this.speedupInterval == 0) && this.speedUp();
+        (this._steps % this.snackInterval == 0) && this.snackService.addSnack();
+        let mazeTimingFactor = 1;
+        this.mazeService.timingFactor = mazeTimingFactor;
+        if (this._steps % mazeTimingFactor == 0) {
+            this.mazeService.lower();
+        }
         this.snakeService.step(grow);
         this.scoreService.update(this.snakeService.snake.segments.length);
     }

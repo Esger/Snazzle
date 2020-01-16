@@ -34,10 +34,6 @@ export class GameScreenCustomElement {
         };
     }
 
-    roundToSpriteSize(size) {
-        return Math.floor(size / this.spriteSize) * this.spriteSize;
-    }
-
     snakeImage(index) {
         switch (index) {
             case 0: return 'head';
@@ -58,7 +54,7 @@ export class GameScreenCustomElement {
     }
 
     wallCSS(yPos, animate) {
-        let animationTime = animate ? this.animationTime() : 0;
+        let animationTime = animate ? this.animationTime() * this.mazeService.timingFactor : 0;
         let css = 'top: ' + yPos + 'px; transition: all ' + animationTime + 's linear;';
         return css
     }
@@ -66,8 +62,8 @@ export class GameScreenCustomElement {
     attached() {
         let self = this;
         let $body = $('body');
-        this.arenaWidth = this.roundToSpriteSize($body.width() - 96);
-        this.arenaHeight = this.roundToSpriteSize($body.height() - 96);
+        this.arenaWidth = this._screenService.roundToSpriteSize($body.width() - 96);
+        this.arenaHeight = this._screenService.roundToSpriteSize($body.height() - 96);
         this.$arena = $('.arena');
         setTimeout(() => {
             this.touchService.setAreaSize(this.$arena);

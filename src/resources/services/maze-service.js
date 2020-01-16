@@ -11,10 +11,12 @@ export class MazeService {
 
     initWalls() {
         this._holes = 1;
-        this._holeSize = 100;
+        this._holeSize = 72;
         this.wallSize = this._screenService.spriteSize;
-        this.stepSize = this.wallSize / 2;
+        this.stepSize = this.wallSize;
         this.mazeWalls = [];
+        this.wallDistance = 250;
+        this.maxWalls = Math.floor(this._screenService.arena.height / this.wallDistance);
         this._wallWidth = this._screenService.arena.width;
         this.addWall();
     }
@@ -25,19 +27,20 @@ export class MazeService {
     }
 
     addWall() {
-        let bricks = [];
-        bricks.push(this.getBrick(0, this._wallWidth - this._holeSize, true));
-        let totalWidth = bricks[0].width + this._holeSize;
-        // for (let i = 0; i < this._holes; i++) {
-        //     // More than 1 hole
-        // }
-        bricks.push(this.getBrick(totalWidth, this._wallWidth - totalWidth));
-        let wall = {
-            animate: true,
-            position: - this.wallSize,
-            bricks: bricks
+        let wallPosition = - this.wallSize;
+        for (let i = 0; i < this.maxWalls; i++) {
+            let bricks = [];
+            bricks.push(this.getBrick(0, this._wallWidth - this._holeSize, true));
+            let totalWidth = bricks[0].width + this._holeSize;
+            bricks.push(this.getBrick(totalWidth, this._wallWidth - totalWidth));
+            let wall = {
+                animate: true,
+                position: wallPosition,
+                bricks: bricks
+            }
+            this.mazeWalls.push(wall);
+            wallPosition = this._screenService.roundToSpriteSize(wallPosition + this.wallDistance);
         }
-        this.mazeWalls.push(wall);
     }
 
     getBrick(left, maxWidth, randomWidth = false) {
@@ -47,6 +50,13 @@ export class MazeService {
                 this.randomBetween(this._minBrickSize, maxWidth) : maxWidth
         }
         return brick;
+    }
+
+    set timingFactor(value) {
+        this._timingFactor = value;
+    }
+    get timingFactor() {
+        return this._timingFactor;
     }
 
     lower() {
