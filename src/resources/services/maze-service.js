@@ -13,9 +13,9 @@ export class MazeService {
         this._holes = 1;
         this._holeSize = 72;
         this.wallSize = this._screenService.spriteSize;
-        this.stepSize = this.wallSize;
+        this.stepSize = this._screenService.stepSize;
         this.mazeWalls = [];
-        this.wallDistance = 250;
+        this.wallDistance = 300;
         this.maxWalls = Math.floor(this._screenService.arena.height / this.wallDistance);
         this._wallWidth = this._screenService.arena.width;
         this.addWall();

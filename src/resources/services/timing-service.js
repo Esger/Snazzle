@@ -13,15 +13,14 @@ export class TimingService {
         this.ea = eventAggregator;
         this.snakeService = snakeService;
         this.snackService = snackService;
-        this.mazeService = mazeService;
+        this._mazeService = mazeService;
         this._screenService = screenService;
-        this.scoreService = scoreService;
+        this._scoreService = scoreService;
 
-        this.crawling = false;
         this._steps = 0;
         this.speed = 1;
         this.fallTimerHandle = null;
-        this.stepTimerHandle = null;
+        this.animationRequest = null;
         this.pause = false;
 
         this.baseGrowInterval = 10;
@@ -36,6 +35,7 @@ export class TimingService {
         this.dropInterval = 10;
         this.snackDuration = 15000;
 
+        // Dit hoort hier niet -> snakeService?
         this.methods = {
             axe: _ => {
                 void (0);
@@ -47,10 +47,10 @@ export class TimingService {
                 this.speedUp();
             },
             diamond: _ => {
-                this.scoreService.update(10000);
+                this._scoreService.update(10000);
             },
             gold: _ => {
-                this.scoreService.update(1000);
+                this._scoreService.update(1000);
             },
             ruby: _ => {
                 this.multiPlyScore();
@@ -77,33 +77,44 @@ export class TimingService {
 
     startGame() {
         this.resetIntervals();
-        this.scoreService.initScore();
+        this._scoreService.initScore();
         this.snakeService.initSnake();
         this.snackService.initSnacks();
-        this.mazeService.initWalls();
-        this.crawling = true;
-        this.resumeGame();
+        this._mazeService.initWalls();
+        this.runGame();
     }
 
-    resumeGame() {
-        this.stepTimerHandle = setInterval(_ => {
-            this.drawScreen();
-        }, this.stepInterval);
-    }
-
-    drawScreen() {
+    runGame() {
+        this.animationRequest = requestAnimationFrame(_ => { this.runGame(); });
         this._steps += 1;
         let grow = (this._steps % this.growInterval == 0);
-        grow && this.ea.publish('grow', this.snakeService.snake.segments.length);
-        (this._steps % this.speedupInterval == 0) && this.speedUp();
-        (this._steps % this.snackInterval == 0) && this.snackService.addSnack();
-        let mazeTimingFactor = 1;
-        this.mazeService.timingFactor = mazeTimingFactor;
-        if (this._steps % mazeTimingFactor == 0) {
-            this.mazeService.lower();
-        }
+        grow = false;
+        // grow && this.ea.publish('grow', this.snakeService.snake.segments.length);
+        // (this._steps % this.speedupInterval == 0) && this.speedUp();
+        // (this._steps % this.snackInterval == 0) && this.snackService.addSnack();
+        // let mazeTimingFactor = 1;
+        // this._mazeService.timingFactor = mazeTimingFactor;
+        // // if (this._steps % mazeTimingFactor == 0) {
+        // //     this._mazeService.lower();
+        // // }
         this.snakeService.step(grow);
-        this.scoreService.update(this.snakeService.snake.segments.length);
+        // this._scoreService.update(this.snakeService.snake.segments.length);
+    }
+
+    pauseGame() {
+        this.pause = !this.pause;
+        if (this.pause) {
+            this.clearTimedEvents();
+        } else {
+            this.runGame();
+        }
+    }
+
+    restart() {
+        if (!this.pause) {
+            this.clearTimedEvents();
+            this.startGame();
+        }
     }
 
     dropSnake() {
@@ -118,7 +129,7 @@ export class TimingService {
             this.clearTimedEvents();
             this.stepInterval -= this.changeStepInterval;
             this._screenService.setAnimationTime(this.stepInterval * 0.001);
-            this.resumeGame();
+            this.runGame();
             this.ea.publish('speed', this.speed);
         }
     }
@@ -129,7 +140,7 @@ export class TimingService {
             this.clearTimedEvents();
             this.stepInterval += this.changeStepInterval;
             this._screenService.setAnimationTime(this.stepInterval * 0.001);
-            this.resumeGame();
+            this.runGame();
             this.ea.publish('speed', this.speed);
         }
     }
@@ -151,9 +162,9 @@ export class TimingService {
     }
 
     multiPlyScore() {
-        this.scoreService.setMultiplier();
+        this._scoreService.setMultiplier();
         setTimeout(_ => {
-            this.scoreService.resetMultiplier();
+            this._scoreService.resetMultiplier();
         }, this.snackDuration);
     }
 
@@ -165,26 +176,8 @@ export class TimingService {
     }
 
     clearTimedEvents() {
-        clearInterval(this.stepTimerHandle);
+        cancelAnimationFrame(this.animationRequest);
         clearInterval(this.fallTimerHandle);
-    }
-
-    pauseGame() {
-        if (this.crawling) {
-            this.pause = !this.pause;
-            if (this.pause) {
-                this.clearTimedEvents();
-            } else {
-                this.resumeGame();
-            }
-        }
-    }
-
-    restart() {
-        if (!this.pause) {
-            this.clearTimedEvents();
-            this.startGame();
-        }
     }
 
     setSubscribers() {
@@ -219,7 +212,7 @@ export class TimingService {
     resetIntervals() {
         this.stepInterval = this.maxStepInterval;
         this._screenService.setAnimationTime(this.stepInterval * 0.001);
-        this.scoreInterval = this.baseSoreInterval;
+        this.scoreInterval = this.baseScoreInterval;
         this.growInterval = this.baseGrowInterval;
         this.speedupInterval = this.baseSpeedupInterval;
         this.snackInterval = this.baseSnackInterval;

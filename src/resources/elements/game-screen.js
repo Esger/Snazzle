@@ -29,6 +29,7 @@ export class GameScreenCustomElement {
         this.snakeParts = this.snakeService.snakeParts;
         this.snackNames = this.snackService.names;
         this.snacks = this.snackService.snacks;
+        this.headRotationTime = 0.2;
         this.animationTime = _ => {
             return this._screenService.getAnimationTime();
         };
@@ -49,7 +50,8 @@ export class GameScreenCustomElement {
             let rotation = this.snakeService.snake.direction * 90;
             rotationStr = 'transform: rotate(' + rotation + 'deg);'
         }
-        let css = 'left: ' + x + 'px; top: ' + y + 'px; ' + rotationStr + ' transition: all ' + animationTime + 's linear';
+        let css = 'left: ' + x + 'px; top: ' + y + 'px; ' + rotationStr
+            + ' transition: transform ' + this.headRotationTime + 's linear';
         return css;
     }
 

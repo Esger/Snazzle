@@ -12,6 +12,7 @@ export class SnakeService {
         this._screenService = screenService;
         this.snackService = snackService;
         this._mazeService = mazeService;
+        this.stepSize = this._screenService.stepSize;
         this.snakeParts = [
             'head',
             'body',
@@ -83,7 +84,6 @@ export class SnakeService {
     }
 
     step(grow) {
-
         // limit the rate at which turns are accepted
         (this.snake.turnSteps > 0) && this.snake.turnSteps--;
 
@@ -131,6 +131,7 @@ export class SnakeService {
 
     advance(segment, predecessor = undefined) {
         let wallSize = this._mazeService.wallSize;
+        let stepSize = this._screenService.stepSize;
         let hitBrick = false;
         this._mazeService.mazeWalls.forEach(wall => {
             let hitWall = (segment.y >= wall.position &&
@@ -149,7 +150,7 @@ export class SnakeService {
                         segment.x = predecessor.x;
                         segment.animate = predecessor.animate;
                     } else {
-                        segment.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this._segmentSize;
+                        segment.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this.stepSize;
                     }
                     segment.y = wall.position + wallSize;
                 }
@@ -161,12 +162,13 @@ export class SnakeService {
                 segment.y = predecessor.y;
                 segment.animate = predecessor.animate;
             } else {
-                segment.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this._segmentSize;
-                segment.y += this.snake.directions[this.mod(this.snake.direction, 4)][0][1] * this._segmentSize;
+                segment.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this.stepSize;
+                segment.y += this.snake.directions[this.mod(this.snake.direction, 4)][0][1] * this.stepSize;
             }
         }
     }
 
+    // TODO let cut off part fall down :)
     cutSnake() {
         let halfSnake = Math.floor(this.snake.segments.length / 2);
         this.snake.segments.splice(-halfSnake);
@@ -174,7 +176,6 @@ export class SnakeService {
 
     // change to explode()
     fallDown() {
-        this.crawling = false;
         for (let i = 0; i < this.snake.segments.length; i++) {
             if (this.snake.deadSegments.indexOf(i) < 0) {
                 let segment = this.snake.segments[i];
@@ -252,7 +253,7 @@ export class SnakeService {
         this.snake.turnSteps = 0;
         this.limits = this._screenService.getLimits();
         let center = this._screenService.getArenaCenter();
-        let y = this._screenService.roundToSpriteSize(Math.floor(this.limits.bottom * 0.8));
+        let y = Math.floor(this.limits.bottom * 0.8);
         let head = {
             x: center.x,
             y: y,

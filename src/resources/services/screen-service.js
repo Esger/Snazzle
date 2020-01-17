@@ -2,6 +2,7 @@ export class ScreenService {
 
     constructor() {
         this.spriteSize = 16;
+        this.stepSize = this.spriteSize / 16;
         this.snackSize = 24;
         this.halfSnackSize = this.snackSize / 2;
         this.mazeSize = 32;
@@ -51,8 +52,8 @@ export class ScreenService {
         this.arena.width = this.arena.clientWidth;
         this.arena.height = this.arena.clientHeight;
         this.setArenaCenter(
-            this.roundToSpriteSize($arena.width() / 2),
-            this.roundToSpriteSize($arena.height() / 2)
+            Math.floor($arena.width() / 2),
+            Math.floor($arena.height() / 2)
         );
         this.setLimits(this.arena.width, this.arena.height);
     }
