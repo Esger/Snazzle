@@ -30,6 +30,7 @@ export class GameScreenCustomElement {
         this.snackNames = this.snackService.names;
         this.snacks = this.snackService.snacks;
         this.headRotationTime = 0.2;
+
         this.animationTime = _ => {
             return this._screenService.getAnimationTime();
         };

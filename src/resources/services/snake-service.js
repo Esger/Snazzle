@@ -131,41 +131,28 @@ export class SnakeService {
 
     advance(segment, predecessor = undefined) {
         let wallSize = this._mazeService.wallSize;
-        let stepSize = this._screenService.stepSize;
-        let hitBrick = false;
-        this._mazeService.mazeWalls.forEach(wall => {
-            let hitWall = (segment.y >= wall.position &&
-                segment.y < wall.position + wallSize);
-            if (hitWall) {
-                hitBrick = wall.bricks.some(brick => {
-                    return segment.x + this._segmentSize >= brick.x && segment.x <= brick.x + brick.width;
-                });
-                if (hitBrick) {
-                    if (this.mod(this.snake.direction, 2) == 1) {
-                        let directions = [0, 2];
-                        let newDirection = directions[Math.ceil(Math.random() * 2) - 1];
-                        this.turnTo(newDirection);
-                    }
-                    if (predecessor) {
-                        segment.x = predecessor.x;
-                        segment.animate = predecessor.animate;
-                    } else {
-                        segment.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this.stepSize;
-                    }
-                    segment.y = wall.position + wallSize;
-                }
+        if (this._mazeService.hitWall(segment)) {
+            let direction = this.mod(this.snake.direction, 2);
+            switch (true) {
+                case (direction == 1):
+                    segment.y--;
+                    break
+                case (direction == 3):
+                    segment.y--;
+                    break
+                default:
+                    segment.y++;
             }
-        });
-        if (!hitBrick) {
-            if (predecessor) {
-                segment.x = predecessor.x;
-                segment.y = predecessor.y;
-                segment.animate = predecessor.animate;
-            } else {
+            if (this.mod(this.snake.direction, 2) == 1) {
+                let directions = [0, 2];
+                let newDirection = directions[Math.ceil(Math.random() * 2) - 1];
+                this.turnTo(newDirection);
                 segment.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this.stepSize;
-                segment.y += this.snake.directions[this.mod(this.snake.direction, 4)][0][1] * this.stepSize;
             }
+        } else {
+            segment.y += this.snake.directions[this.mod(this.snake.direction, 4)][0][1] * this.stepSize;
         }
+        segment.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this.stepSize;
     }
 
     // TODO let cut off part fall down :)
