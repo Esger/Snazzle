@@ -84,9 +84,6 @@ export class SnakeService {
     }
 
     step(grow) {
-        // limit the rate at which turns are accepted
-        (this.snake.turnSteps > 0) && this.snake.turnSteps--;
-
         // construct new tail before new positions are calculated
         let newTail = {};
         if (grow) {
@@ -107,15 +104,6 @@ export class SnakeService {
         let head = this.snake.segments[0];
         this.advance(head);
 
-        // if head goes through side, don't animate
-        let passRight = head.x > this._screenService.limits.right;
-        let passLeft = head.x < - this._segmentSize;
-        head.animate = !(passLeft || passRight);
-
-        // set head to opposite side if passed through
-        passRight && (head.x = -this._segmentSize);
-        passLeft && (head.x = this._screenService.limits.right);
-
         this.hitBottom();
         // this.hitSnake();
 
@@ -129,30 +117,25 @@ export class SnakeService {
         grow && (this.snake.segments.push(newTail));
     }
 
-    advance(segment, predecessor = undefined) {
-        let wallSize = this._mazeService.wallSize;
+    advance(segment) {
         if (this._mazeService.hitWall(segment)) {
             let direction = this.mod(this.snake.direction, 2);
-            switch (true) {
-                case (direction == 1):
-                    segment.y--;
-                    break
-                case (direction == 3):
-                    segment.y--;
-                    break
-                default:
-                    segment.y++;
-            }
+            (direction == 1) ? segment.y-- : segment.y++;
             if (this.mod(this.snake.direction, 2) == 1) {
                 let directions = [0, 2];
                 let newDirection = directions[Math.ceil(Math.random() * 2) - 1];
                 this.turnTo(newDirection);
-                segment.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this.stepSize;
             }
         } else {
             segment.y += this.snake.directions[this.mod(this.snake.direction, 4)][0][1] * this.stepSize;
         }
         segment.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this.stepSize;
+
+        // set head to opposite side if passed through
+        (segment.x > this._screenService.limits.right) &&
+            (segment.x = -this._segmentSize);
+        (segment.x < - this._segmentSize) &&
+            (segment.x = this._screenService.limits.right);
     }
 
     // TODO let cut off part fall down :)
@@ -216,8 +199,7 @@ export class SnakeService {
             'ArrowUp': 3
         };
         this.ea.subscribe('keyPressed', response => {
-            if (response.startsWith('Arrow') && this.snake.turnSteps == 0) {
-                this.snake.turnSteps = 1;
+            if (response.startsWith('Arrow')) {
                 this.turnTo(directions[response]);
             }
         });
