@@ -48,7 +48,7 @@ export class GameScreenCustomElement {
         let rotationStr = '';
         let animationTime = animate ? this.animationTime() : 0;
         if (index == 0) {
-            let rotation = this.snakeService.snake.direction * 90;
+            let rotation = this.snakeService.snake.segments[0].direction * 90;
             rotationStr = 'transform: rotate(' + rotation + 'deg);'
         }
         let css = 'left: ' + x + 'px; top: ' + y + 'px; ' + rotationStr

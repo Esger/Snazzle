@@ -23,7 +23,7 @@ export class TimingService {
         this.animationRequest = null;
         this.pause = false;
 
-        this.baseGrowInterval = 10;
+        this.baseGrowInterval = 100;
         this.baseScoreInterval = 10;
         this.baseSnackInterval = 10;
         this.baseSpeedupInterval = 100;
@@ -88,8 +88,7 @@ export class TimingService {
         this.animationRequest = requestAnimationFrame(_ => { this.runGame(); });
         this._steps += 1;
         let grow = (this._steps % this.growInterval == 0);
-        grow = false;
-        // grow && this.ea.publish('grow', this.snakeService.snake.segments.length);
+        grow && this.ea.publish('grow', this.snakeService.snake.segments.length);
         // (this._steps % this.speedupInterval == 0) && this.speedUp();
         // (this._steps % this.snackInterval == 0) && this.snackService.addSnack();
         // let mazeTimingFactor = 1;
@@ -98,7 +97,7 @@ export class TimingService {
         // //     this._mazeService.lower();
         // // }
         this.snakeService.step(grow);
-        // this._scoreService.update(this.snakeService.snake.segments.length);
+        this._scoreService.update(this.snakeService.snake.segments.length);
     }
 
     pauseGame() {
@@ -181,7 +180,6 @@ export class TimingService {
     }
 
     setSubscribers() {
-        let direction = 0;
         this.ea.subscribe('keyPressed', response => {
             switch (response) {
                 case 'Enter': this.ea.publish('start');

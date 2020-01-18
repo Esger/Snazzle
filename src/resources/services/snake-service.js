@@ -19,7 +19,6 @@ export class SnakeService {
             'tail'
         ];
         this.snake = {
-            direction: 0,
             // [   [x,y increment], [directionChanges for each direction]
             //     [[1, 0], [0, 1, 0, -1]],  right
             //     [[0, 1], [-1, 0, 1, 0]],  down
@@ -84,58 +83,104 @@ export class SnakeService {
     }
 
     step(grow) {
-        // construct new tail before new positions are calculated
-        let newTail = {};
-        if (grow) {
-            let tail = this.snake.segments[this.snake.segments.length - 1];
-            newTail.animate = tail.animate;
-            newTail.x = tail.x;
-            newTail.y = tail.y;
-        }
+        // head gets new position according to it's direction
+        let head = this.snake.segments[0];
+        this.advance(head);
 
         // segments get position of predecessor
         for (let i = this.snake.segments.length - 1; i > 0; i -= 1) {
             let current = this.snake.segments[i];
             let predecessor = this.snake.segments[i - 1];
-            this.advance(current, predecessor);
+            this.follow(current, predecessor);
         }
-
-        // head gets new position according to it's direction
-        let head = this.snake.segments[0];
-        this.advance(head);
 
         this.hitBottom();
         // this.hitSnake();
 
         // check collision with head and neck for when snack was added late
-        let neck = head;
-        (this.snake.segments.length > 1) && (neck = this.snake.segments[1]);
-        let method = this.snackService.hitSnack(head, neck).toLowerCase();
-        this.snackMethods[method]();
+        // let neck = head;
+        // (this.snake.segments.length > 1) && (neck = this.snake.segments[1]);
+        // let method = this.snackService.hitSnack(head, neck).toLowerCase();
+        // this.snackMethods[method]();
 
-        // add tail element
-        grow && (this.snake.segments.push(newTail));
+        let newTail = {};
+        if (grow) {
+            let tail = this.snake.segments[this.snake.segments.length - 1];
+            newTail.x = tail.x;
+            newTail.y = tail.y;
+            newTail.direction = tail.direction;
+            this.snake.segments.push(newTail);
+        }
+
     }
 
-    advance(segment) {
-        if (this._mazeService.hitWall(segment)) {
-            let direction = this.mod(this.snake.direction, 2);
-            (direction == 1) ? segment.y-- : segment.y++;
-            if (this.mod(this.snake.direction, 2) == 1) {
-                let directions = [0, 2];
-                let newDirection = directions[Math.ceil(Math.random() * 2) - 1];
-                this.turnTo(newDirection);
+    follow(segment, predecessor) {
+        if (segment.direction == predecessor.direction) {
+            if (this.yTooFar(segment, predecessor, this._segmentSize) ||
+                this.xTooFar(segment, predecessor, this._segmentSize)) {
+                this.advanceXorY(segment);
             }
-        } else {
-            segment.y += this.snake.directions[this.mod(this.snake.direction, 4)][0][1] * this.stepSize;
+        } else { // the predecessor has turned
+            if (this.movesVertical(segment)) {
+                if (this.yTooFar(segment, predecessor, 1)) {
+                    this.advanceXorY(segment);
+                } else {
+                    segment.direction = predecessor.direction;
+                    this.advanceXorY(segment);
+                }
+            } else { // it moves horizontally
+                if (this.xTooFar(segment, predecessor, 1)) {
+                    this.advanceXorY(segment);
+                } else {
+                    segment.direction = predecessor.direction;
+                    this.advanceXorY(segment);
+                }
+            }
         }
-        segment.x += this.snake.directions[this.mod(this.snake.direction, 4)][0][0] * this.stepSize;
+        this.throughSide(segment);
+    }
 
+    yTooFar(segment, predecessor, offset) {
+        return Math.abs(segment.y - predecessor.y) >= offset;
+    }
+
+    xTooFar(segment, predecessor, offset) {
+        return Math.abs(segment.x - predecessor.x) >= offset;
+    }
+
+    advanceXorY(segment) {
+        segment.x += this.snake.directions[this.mod(segment.direction, 4)][0][0] * this.stepSize;
+        segment.y += this.snake.directions[this.mod(segment.direction, 4)][0][1] * this.stepSize;
+    }
+
+    throughSide(segment) {
         // set head to opposite side if passed through
         (segment.x > this._screenService.limits.right) &&
             (segment.x = -this._segmentSize);
         (segment.x < - this._segmentSize) &&
             (segment.x = this._screenService.limits.right);
+    }
+
+    pushDown(segment) {
+        (this.mod(segment.direction, 2) == 1) ? segment.y-- : segment.y++;
+    }
+
+    movesVertical(segment) {
+        return this.mod(segment.direction, 2) == 1;
+    }
+
+    advance(segment) {
+        if (this._mazeService.hitWall(segment)) {
+            this.pushDown(segment);
+            if (this.movesVertical(segment)) {
+                let directions = [0, 2];
+                let newDirection = directions[Math.ceil(Math.random() * 2) - 1];
+                this.turnTo(segment, newDirection);
+            }
+        } else {
+            this.advanceXorY(segment);
+        }
+        this.throughSide(segment);
     }
 
     // TODO let cut off part fall down :)
@@ -200,18 +245,18 @@ export class SnakeService {
         };
         this.ea.subscribe('keyPressed', response => {
             if (response.startsWith('Arrow')) {
-                this.turnTo(directions[response]);
+                this.turnTo(this.snake.segments[0], directions[response]);
             }
         });
     }
 
-    turnTo(newDirection) {
+    turnTo(segment, newDirection) {
         // Ensure head rotation doesn't spin wrong direction
         // when changing direction from 0 to 3 and vice versa
         // And ensure it cannot turn 180 degrees
-        let directionChange = this.snake.directions[this.mod(this.snake.direction, 4)][1][newDirection];
-        this.snake.direction += directionChange;
-        console.log(newDirection, this.snake.direction);
+        let directionChange = this.snake.directions[this.mod(segment.direction, 4)][1][newDirection];
+        segment.direction += directionChange;
+        console.log(newDirection, segment.direction);
     }
 
     initSnake() {
@@ -226,8 +271,7 @@ export class SnakeService {
         let head = {
             x: center.x,
             y: y,
-            animate: true,
-            pushDown: false
+            direction: Math.floor(Math.random() * 4)
         };
         this.snake.segments.push(head);
     }
