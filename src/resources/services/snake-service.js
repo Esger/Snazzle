@@ -84,6 +84,7 @@ export class SnakeService {
 
     step(grow) {
         // head gets new position according to it's direction
+        this.turnDistance--;
         let head = this.snake.segments[0];
         this.advance(head);
 
@@ -245,7 +246,11 @@ export class SnakeService {
         };
         this.ea.subscribe('keyPressed', response => {
             if (response.startsWith('Arrow')) {
-                this.turnTo(this.snake.segments[0], directions[response]);
+                if (this.turnDistance <= 0) {
+                    this.turnTo(this.snake.segments[0], directions[response]);
+                    this.turnDistance = this._segmentSize;
+                    console.log(this.turnDistance);
+                }
             }
         });
     }
@@ -256,7 +261,6 @@ export class SnakeService {
         // And ensure it cannot turn 180 degrees
         let directionChange = this.snake.directions[this.mod(segment.direction, 4)][1][newDirection];
         segment.direction += directionChange;
-        console.log(newDirection, segment.direction);
     }
 
     initSnake() {
@@ -264,7 +268,7 @@ export class SnakeService {
         this.score = 0;
         this.snake.deadSegments = [];
         this.snake.segments = [];
-        this.snake.turnSteps = 0;
+        this.turnDistance = 0;
         this.limits = this._screenService.getLimits();
         let center = this._screenService.getArenaCenter();
         let y = Math.floor(this.limits.bottom * 0.8);
