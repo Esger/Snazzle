@@ -83,11 +83,12 @@ export class SnakeService {
 
     step(grow) {
         // head gets new position according to it's direction
-        this.turnDistance--;
+        this._turnDistance--;
         let head = this.snake.segments[0];
         this.advance(head);
 
         // segments get position of predecessor
+        // TODO als het te traag wordt, beweeg als een worm: niet alles tegelijk
         for (let i = this.snake.segments.length - 1; i > 0; i -= 1) {
             let current = this.snake.segments[i];
             let predecessor = this.snake.segments[i - 1];
@@ -211,7 +212,7 @@ export class SnakeService {
     // left / right -> pass through
     hitBottom() {
         let head = this.snake.segments[0];
-        let bottomHit = head.y > this.limits.bottom - this._segmentSize;
+        let bottomHit = head.y > this._limits.bottom - this._segmentSize;
         if (bottomHit) {
             this.ea.publish('die', 'You&rsquo;re dirt');
             return true;
@@ -245,10 +246,10 @@ export class SnakeService {
         };
         this.ea.subscribe('keyPressed', response => {
             if (response.startsWith('Arrow')) {
-                if (this.turnDistance <= 0) {
+                if (this._turnDistance <= 0) {
                     this.turnTo(this.snake.segments[0], directions[response]);
-                    this.turnDistance = this._segmentSize;
-                    console.log(this.turnDistance);
+                    this._turnDistance = this._segmentSize;
+                    console.log(this._turnDistance);
                 }
             }
         });
@@ -264,14 +265,14 @@ export class SnakeService {
 
     initSnake() {
         this.score = 0;
+        this._turnDistance = 0;
         this._segmentSize = this._screenService.spriteSize;
         this._stepSize = this._screenService.stepSize;
         this.snake.deadSegments = [];
         this.snake.segments = [];
-        this.turnDistance = 0;
-        this.limits = this._screenService.getLimits();
+        this._limits = this._screenService.getLimits();
         let center = this._screenService.getArenaCenter();
-        let y = Math.floor(this.limits.bottom * 0.8);
+        let y = Math.floor(this._limits.bottom * 0.8);
         let head = {
             x: center.x,
             y: y,

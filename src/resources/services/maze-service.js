@@ -52,13 +52,6 @@ export class MazeService {
         return brick;
     }
 
-    set timingFactor(value) {
-        this._timingFactor = value;
-    }
-    get timingFactor() {
-        return this._timingFactor;
-    }
-
     lower() {
         this.mazeWalls.forEach(wall => {
             wall.position += this.stepSize;
