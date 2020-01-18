@@ -17,6 +17,6 @@
         <img repeat.for="segment of snakeService.snake.segments"
              css.bind="segmentCSS($index, segment.x, segment.y, segment.animate)"
              src="../../assets/images/${ snakeImage($index) }.png"
-             class="segment">
+             class="segment ${$first ? 'head' : ''}">
     </div>
 </template>

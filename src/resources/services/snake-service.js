@@ -12,7 +12,6 @@ export class SnakeService {
         this._screenService = screenService;
         this.snackService = snackService;
         this._mazeService = mazeService;
-        this.stepSize = this._screenService.stepSize;
         this.snakeParts = [
             'head',
             'body',
@@ -150,8 +149,8 @@ export class SnakeService {
     }
 
     advanceXorY(segment) {
-        segment.x += this.snake.directions[this.mod(segment.direction, 4)][0][0] * this.stepSize;
-        segment.y += this.snake.directions[this.mod(segment.direction, 4)][0][1] * this.stepSize;
+        segment.x += this.snake.directions[this.mod(segment.direction, 4)][0][0] * this._stepSize;
+        segment.y += this.snake.directions[this.mod(segment.direction, 4)][0][1] * this._stepSize;
     }
 
     throughSide(segment) {
@@ -264,8 +263,9 @@ export class SnakeService {
     }
 
     initSnake() {
-        this._segmentSize = this._screenService.spriteSize;
         this.score = 0;
+        this._segmentSize = this._screenService.spriteSize;
+        this._stepSize = this._screenService.stepSize;
         this.snake.deadSegments = [];
         this.snake.segments = [];
         this.turnDistance = 0;
