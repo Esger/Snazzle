@@ -116,9 +116,16 @@ export class SnakeService {
     }
 
     follow(segment, predecessor) {
+        if (this._mazeService.hitWall(segment)) {
+            this.pushDown(segment);
+            if (this.movesVertical(segment)) {
+                segment.direction = predecessor.direction;
+            }
+        }
         if (segment.direction == predecessor.direction) {
             if (this.yTooFar(segment, predecessor, this._segmentSize) ||
                 this.xTooFar(segment, predecessor, this._segmentSize)) {
+                // this.reAlign(segment, predecessor);
                 this.advanceXorY(segment);
             }
         } else { // the predecessor has turned
@@ -127,14 +134,16 @@ export class SnakeService {
                     this.advanceXorY(segment);
                 } else {
                     segment.direction = predecessor.direction;
-                    this.advanceXorY(segment);
+                    this.reAlign(segment, predecessor);
+                    // this.advanceXorY(segment);
                 }
             } else { // it moves horizontally
                 if (this.xTooFar(segment, predecessor, 1)) {
                     this.advanceXorY(segment);
                 } else {
                     segment.direction = predecessor.direction;
-                    this.advanceXorY(segment);
+                    this.reAlign(segment, predecessor);
+                    // this.advanceXorY(segment);
                 }
             }
         }
@@ -149,9 +158,25 @@ export class SnakeService {
         return Math.abs(segment.x - predecessor.x) >= offset;
     }
 
+    reAlign(segment, predecessor) {
+        if (this.movesVertical(segment)) {
+            const dy = this.snake.directions[this.modDirection(predecessor.direction)][0][1];
+            segment.y = predecessor.y - dy * this._segmentSize;
+            segment.x = predecessor.x;
+        } else {
+            const dx = this.snake.directions[this.modDirection(predecessor.direction)][0][0];
+            segment.x = predecessor.x - dx * this._segmentSize;
+            segment.y = predecessor.y;
+        }
+    }
+
+    modDirection(direction) {
+        return this.mod(direction, 4);
+    }
+
     advanceXorY(segment) {
-        segment.x += this.snake.directions[this.mod(segment.direction, 4)][0][0] * this._stepSize;
-        segment.y += this.snake.directions[this.mod(segment.direction, 4)][0][1] * this._stepSize;
+        segment.x += this.snake.directions[this.modDirection(segment.direction)][0][0] * this._stepSize;
+        segment.y += this.snake.directions[this.modDirection(segment.direction)][0][1] * this._stepSize;
     }
 
     throughSide(segment) {
@@ -178,9 +203,8 @@ export class SnakeService {
                 let newDirection = directions[Math.ceil(Math.random() * 2) - 1];
                 this.turnTo(segment, newDirection);
             }
-        } else {
-            this.advanceXorY(segment);
         }
+        this.advanceXorY(segment);
         this.throughSide(segment);
     }
 
@@ -259,7 +283,7 @@ export class SnakeService {
         // Ensure head rotation doesn't spin wrong direction
         // when changing direction from 0 to 3 and vice versa
         // And ensure it cannot turn 180 degrees
-        let directionChange = this.snake.directions[this.mod(segment.direction, 4)][1][newDirection];
+        let directionChange = this.snake.directions[this.modDirection(segment.direction)][1][newDirection];
         segment.direction += directionChange;
     }
 

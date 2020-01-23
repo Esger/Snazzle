@@ -23,8 +23,8 @@ export class TimingService {
         this._animationRequest = null;
         this.pause = false;
 
-        this.baseGrowInterval = 100;
-        this.baseScoreInterval = 10;
+        this._baseGrowInterval = 100;
+        this._baseScoreInterval = 10;
         this.baseSnackInterval = 10;
         this.baseSpeedupInterval = 100;
 
@@ -95,7 +95,9 @@ export class TimingService {
             this._mazeService.lower();
         }
         this._snakeService.step(grow);
-        this._scoreService.update(this._snakeService.snake.segments.length);
+        if (this._steps % this._scoreInterval == 0) {
+            this._scoreService.update(this._snakeService.snake.segments.length);
+        }
     }
 
     pauseGame() {
@@ -150,7 +152,7 @@ export class TimingService {
     }
 
     growHarder() {
-        if (this._growInterval > this.baseGrowInterval) {
+        if (this._growInterval > this._baseGrowInterval) {
             this._growInterval -= 5;
             setTimeout(_ => {
                 this._growInterval += 5;
@@ -208,8 +210,8 @@ export class TimingService {
     resetIntervals() {
         this._stepInterval = this.maxStepInterval;
         this._screenService.setAnimationTime(this._stepInterval * 0.001);
-        this.scoreInterval = this.baseScoreInterval;
-        this._growInterval = this.baseGrowInterval;
+        this._scoreInterval = this._baseScoreInterval;
+        this._growInterval = this._baseGrowInterval;
         this.speedupInterval = this.baseSpeedupInterval;
         this.snackInterval = this.baseSnackInterval;
         this._mazeTimingFactor = 2;

@@ -68,7 +68,7 @@ export class MazeService {
     hitWall(segment) {
         let hitBrick = false;
         this.mazeWalls.forEach(wall => {
-            let hitWall = (segment.y >= wall.position - this._wallSize &&
+            const hitWall = (segment.y >= wall.position - this._wallSize &&
                 segment.y < wall.position + this._wallSize);
             if (hitWall) {
                 hitBrick = wall.bricks.some(brick => {
